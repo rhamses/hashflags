@@ -13,7 +13,7 @@
           </p>
         </div>
         <section class="container container--field">
-          <div class="columns">
+          <div class="columns is-mobile">
             <div class="column">
               <div class="field">
                 <div class="control has-icons-left">
@@ -39,7 +39,7 @@
       </div>
     </section>
     <div class="columns is-multiline is-mobile is-vcentered">
-      <div class="column is-one-fifth" v-for="hashflag in hashflagsFiltered">
+      <div class="column is-one-fifth-desktop" v-for="hashflag in hashflagsFiltered">
         <div class="tile is-parent">
           <article class="tile is-child notification has-background-white-bis">
             <div class="content">
