@@ -44,13 +44,13 @@
           <article class="tile is-child notification has-background-white-bis">
             <div class="content">
               <div class="content">
-                <a target="_blank" :href="`https://twitter.com/search?q=${encodeURIComponent('#' + hashflag.hashtag)}`">
-                  <p class="title is-5 has-text-centered">{{(hashflag.hashtag) ? `#${hashflag.hashtag}` : ''}}</p>
+                  <a v-for="hs in hashflag.hashtag" target="_blank" :href="`https://twitter.com/search?q=${encodeURIComponent('#' + hs)}`">
+                    <p class="title is-6 has-text-centered">{{(hs) ? `#${hs}` : ''}}</p>
+                  </a>
                   <figure class="image is-64x64">
                     <img :src="hashflag.assetUrl.original" :alt="(hashflag.hashtag) ? `#${hashflag.hashtag}` : ''">
                   </figure>
                   <small class="limitDate has-text-centered">{{hashflag.starting}} - {{hashflag.ending}}</small>
-                </a>
               </div>
             </div>
           </article>
@@ -94,7 +94,7 @@
         if (response.status === 200) {
           this.data = response.data,
           this.hashflags = response.data.hashflags,
-          this.campaings = response.data.campaigns
+          this.campaings = response.data.campaings
         }
       });
     },
@@ -111,12 +111,12 @@
       hashflagsFiltered(){
         let b = '';
         return this.hashflags.filter(hashflag => {
-          if (hashflag.campaignName.includes(this.search)) {
+          if (hashflag.campaignName.toLowerCase().includes(this.search.toLowerCase().replace("#",""))) {
             return hashflag;
           }
 
           b = hashflag.hashtag.filter(item => {
-            if (item.includes(this.search)) {
+            if (item.toLowerCase().includes(this.search.toLowerCase().replace("#",""))) {
               return item;
             }
           });
