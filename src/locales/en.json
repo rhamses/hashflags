@@ -1,0 +1,13 @@
+{
+  "title": [
+    "<b>Hashflags</b> are always cool! Unfortunately they don't last forever, and sometimes we can't follow all of them on the site.",
+    "Here it's possible to look up each one of the [totalHashtags] active right now."
+  ],
+  "searchPlaceholder": "#Search for hashflags or campaings",
+  "campaingsCTA": "See all campaings",
+  "button": {
+    "more": "Show More...",
+    "less": "Show Less..."
+  },
+  "loading": "Loading all hashflags"
+}

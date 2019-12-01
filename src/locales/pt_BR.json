@@ -1,0 +1,13 @@
+{
+  "title": [
+    "<b>Hashflags</b> são demais! Infelizmente, elas não ficam online para sempre, e às vezes, perdemos de ver algumas que nos arrependemos depois.",
+    "O objetivo deste site é ser um diretório de pesquisa de todas as [totalHashtags] que estão ativas no site."
+  ],
+  "searchPlaceholder": "#Procure uma hashflag específica ou pelo nome de uma campanha",
+  "campaingsCTA": "Veja todas as campanhas",
+  "button": {
+    "more": "Carregar Mais...",
+    "less": "Carregar Menos..."
+  },
+  "loading": "Carregando as hashflags"
+}
