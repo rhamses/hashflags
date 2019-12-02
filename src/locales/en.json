@@ -4,7 +4,7 @@
     "Here it's possible to look up each one of the [totalHashtags] active right now."
   ],
   "searchPlaceholder": "#Search for hashflags or campaings",
-  "campaingsCTA": "See all campaings",
+  "campaignsCTA": "See all campaings",
   "button": {
     "more": "Show More...",
     "less": "Show Less..."

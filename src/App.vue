@@ -1,6 +1,27 @@
 <template>
   <div id="app" class="has-background-light">
-    <section class="hero is-medium is-info is-bold">
+    <section v-show="belowFold" :class="{'fixLevel': belowFold}" class="level is-mobile is-info">
+      <div class="level-right">
+        <div class="level-item">
+          <h1 class="is-5 has-text-centered title">
+            <a href="#app" >TWITTER #HASHFLAGS 🚩</a>
+          </h1>
+        </div>
+      </div>
+      <div class="level-left">
+        <div class="level-item">
+          <div class="field">
+            <div class="control has-icons-left">
+              <input v-model="search" @input="filterHashflags" class="input" type="search" :placeholder="$t('searchPlaceholder')">
+              <span class="icon is-small is-left">
+                <i class="fas fa-search fa-xs"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section ref="heroPanel" class="hero is-medium is-info is-bold">
       <div class="hero-body has-text-centered">
         <div class="container">
           <h1 class="title">
@@ -17,7 +38,7 @@
             <div class="column">
               <div class="field">
                 <div class="control has-icons-left">
-                  <input v-model="search" class="input" type="search" :placeholder="$t('searchPlaceholder')">
+                  <input v-model="search" @input="filterHashflags" class="input" type="search" :placeholder="$t('searchPlaceholder')">
                   <span class="icon is-small is-left">
                     <i class="fas fa-search fa-xs"></i>
                   </span>
@@ -48,7 +69,7 @@
       <p> {{ $t('loading') }} </p>
     </div>
     <div class="columns is-multiline is-mobile is-vcentered">
-      <div class="column is-one-fifth-desktop" v-for="hashflag in hashflagsFiltered">
+      <div class="column is-one-fifth-desktop" v-for="hashflag in hashflagsComputed">
         <div class="tile is-parent">
           <article class="tile is-child notification has-background-white-bis">
             <div class="content">
@@ -70,6 +91,48 @@
 </template>
 
 <style scoped>
+
+body {
+  overflow-x: hidden;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media screen and (min-width: 0){
+  .fixLevel {
+    padding-bottom: .5em;
+    padding-top: .5em;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 10;
+
+    background-color: #3498db;
+  }
+  
+  .fixLevel .title {
+    color: #fff;
+    font-size: 1em;
+  }
+
+  .fixLevel .title a,
+  .fixLevel .title a:hover,
+  .fixLevel .title a:active,
+  .fixLevel .title a:visited {
+    color: inherit
+  }
+}
+
+@media screen and (min-width: 1024px){
+  .fixLevel {
+    padding-bottom: 1em;
+    padding-right: 1em;
+    padding-left: 1em;
+    padding-top: 1em;
+  }
+}
 
 .button-back {
   position: fixed;
@@ -238,6 +301,7 @@
         data: [],
         hashflags: [],
         hashflagsTotal: [],
+        hashFlagsFiltered: [],
         campaigns: [],
         messages: {},
         loading: true,
@@ -251,7 +315,8 @@
         showTags: false,
         triggerScroll: true,
         totalHashtags: 0,
-        fold: 0
+        fold: 0,
+        belowFold: false
       }
     },
     computed: {
@@ -265,32 +330,12 @@
           return this.button.text;
         },
       },
-      hashflagsFiltered(){
-        let b = [];
-        let scope = this.hashflagsTotal;
-        let a;
-        if (this.search.length > 0) {
-          this.triggerScroll = false;
-          this.scroll();
-          return scope.filter(hashflag => {
-            if (hashflag.campaignName.toLowerCase().includes(this.search.toLowerCase().replace("#",""))) {
-              return hashflag;
-            }
-
-            b = hashflag.hashtag.filter(item => {
-              if (item.toLowerCase().includes(this.search.toLowerCase().replace("#",""))) {
-                return item;
-              }
-            });
-
-            if (b.length > 0 ) {
-              return b;
-            }
-          });
-        } else {
-          this.triggerScroll = true;
-          this.scroll();
-          return this.hashflags;
+      hashflagsComputed: {
+        get(){
+          return this.hashFlagsFiltered;
+        },
+        set(newVal){
+          return this.hashFlagsFiltered = newVal;
         }
       }
     },
@@ -325,14 +370,19 @@
         this.$axios.get(`${process.env.VUE_APP_API}/hashflags/list?page=50&skip=${this.fold}`).then(response => {
           if (response.status === 200) {
             this.hashflags = response.data.hashflags;
+            this.hashFlagsFiltered = this.hashflags;
             this.loading = false;
           }
         });
       },
       scroll (person) {
-        if (this.triggerScroll) {
-          window.onscroll = () => {
-            let bottomOfWindow = window.innerHeight + window.scrollY === document.body.offsetHeight;
+        window.onscroll = () => {
+          let bottomOfWindow = window.innerHeight + window.scrollY === document.body.offsetHeight;
+          let belowFold = window.scrollY >= this.$refs.heroPanel.offsetHeight;
+          
+          this.belowFold = belowFold;
+
+          if (this.triggerScroll) {
             if (bottomOfWindow) {
               this.loading = true;
               this.fold += 50;
@@ -344,9 +394,35 @@
                   }
                 });
             }
-          };
+          }
+        };
+      },
+      filterHashflags(){
+        if (this.search.length > 0) {
+          window.setTimeout(() => {
+            let b = [];
+            let scope = this.hashflagsTotal;
+            const result = scope.filter(hashflag => {
+              if (hashflag.campaignName.toLowerCase().replace(" ", "").includes(this.search.toLowerCase().replace("#","").replace(" ",""))) {
+                return hashflag;
+              }
+              b = hashflag.hashtag.filter(item => {
+                if (item.toLowerCase().includes(this.search.toLowerCase().replace("#",""))) {
+                  return item;
+                }
+              });
+              if (b.length > 0 ) {
+                return b;
+              }
+            });
+            this.triggerScroll = false;
+            this.scroll();
+            this.hashflagsComputed = result;
+          }, 500);
         } else {
-          window.onscroll = () => {return false};
+          this.triggerScroll = true;
+          this.scroll();
+          this.hashflagsComputed = this.hashflags;
         }
       }
     }
