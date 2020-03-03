@@ -9,5 +9,8 @@
     "more": "Show More...",
     "less": "Show Less..."
   },
-  "loading": "Loading all hashflags"
+  "loading": "Loading all hashflags",
+  "more_1": "And",
+  "more_2": "more...",
+  "footer": "Orgulhosamente feito por"
 }

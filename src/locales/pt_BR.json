@@ -9,5 +9,8 @@
     "more": "Carregar Mais...",
     "less": "Carregar Menos..."
   },
-  "loading": "Carregando as hashflags"
+  "loading": "Carregando as hashflags",
+  "more_1": "E",
+  "more_2": "mais...",
+  "footer": "Orgulhosamente feito por"
 }
