@@ -1,23 +1,32 @@
 <template>
-	<div class="about">
+  <div class="about">
     <Header />
-		<div class="container">
-			<div class="columns is-multiline is-mobile is-vcentered">
-				<div class="column">
+    <div class="container">
+      <div class="columns is-multiline is-mobile is-vcentered">
+        <div class="column">
           <br>
-          <h1 class="title">Dados sobre esta campanha: {{campaingName}}</h1>
+          <h1 class="title">Dados sobre esta campanha: <span class="tag is-primary">{{campaingName}}</span></h1>
           <div class="tile">
             <div class="tile is-parent is-vertical has-background-white-bis">
               <article class="tile is-child is-primary is-vertical">
-                <a v-for="(hs, index) in hashflag.hashtag" target="_blank" :href="`https://twitter.com/search?q=${encodeURIComponent('#' + hs)}`">
-                    <p class="title is-6 has-text-centered">{{(hs) ? `#${hs}` : ''}}</p>
+                <p 
+                  style="margin-bottom: .5em;"
+                  class= "has-text-centered"
+                  v-for="(hs, index) in hashflag.hashtag"
+                >
+                  <a 
+                    target="_blank"
+                    class="tag is-info is-light"
+                    :href="`https://twitter.com/search?q=${encodeURIComponent('#' + hs)}`">
+                    {{(hs) ? `#${hs}` : ''}}
                   </a>
+                </p>
               </article>
             </div>
             <div class="tile is-vertical is-parent notification has-background-white-bis">
               <article class="tile is-child is-primary is-centered">
                 <figure class="image is-128x128">
-                  <img v-lazy="hashflag.assetUrl.original" :alt="(hashflag.hashtag) ? `#${hashflag.hashtag}` : ''">
+                  <img v-lazy="hashflag.assetUrl.original">
                 </figure>
               </article>
               <article class="tile is-parent">
@@ -36,11 +45,11 @@
               </article>
             </div>
           </div>
-				</div>
-			</div>
-		</div>
+        </div>
+      </div>
+    </div>
     <Footer />
-	</div>
+  </div>
 </template>
 
 <style scoped>
@@ -75,31 +84,39 @@ import Header from '@/components/Header.vue';
 import { format } from 'date-fns';
 
 export default {
-	name: 'Single',
+  name: 'Single',
   components: {
     Footer,
     Header
   },
-	data(){
-		return {
-			hashflag: {},
-      campaingName: ''
-		}
-	},
-	filters: {
-		doDate(val){
-			return format(new Date(parseInt(val)), 'd-MM-Y');
-		}
-	},
-	mounted(){
-		this.campaingName = this.$router.currentRoute.params.campaingName;
+  data(){
+    return {
+      hashflag: {},
+      campaingName: '',
+      urlHashflag: ''
+    }
+  },
+  filters: {
+    doDate(val){
+      return format(new Date(parseInt(val)), 'd-MM-Y');
+    }
+  },  
+  mounted(){
+    this.campaingName = this.$route.params.campaingName;
+    this.urlHashflag = this.$route.params.hashflag;
 
-		this.$axios.get(`${process.env.VUE_APP_API}/hashflags/${this.campaingName}`).then(response => {
-			if (response.status === 200) {
-				this.hashflag = response.data.hashflags[0];
-			}
-		});
+    if (this.urlHashflag) {
+      document.querySelector('meta[property="og:image"').content = `https://hashflags.s3.amazonaws.com/social-media/${this.campaingName}_${this.urlHashflag}.png`
+    } else {
+      document.querySelector('meta[property="og:image"').content = "https://hashflags.s3.amazonaws.com/social-media/hashflags-frame.png"
+    }
 
-	}
+    this.$axios.get(`${process.env.VUE_APP_API}/hashflags/${this.campaingName}`).then(response => {
+      if (response.status === 200) {
+        this.hashflag = response.data.hashflags[0];
+      }
+    });
+
+  }
 }
 </script>

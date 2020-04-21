@@ -83,8 +83,8 @@
                     </p>
                   </router-link>
                   <figure class="image is-64x64">
-                  	<router-link :to="'/'+hashflag.campaignName">
-                    	<img v-lazy="hashflag.assetUrl.original" :alt="(hashflag.hashtag) ? `#${hashflag.hashtag}` : ''">
+                    <router-link :to="'/'+hashflag.campaignName">
+                      <img v-lazy="hashflag.assetUrl.original" :alt="(hashflag.hashtag) ? `#${hashflag.hashtag}` : ''">
                     </router-link>
                   </figure>
                   <small class="limitDate has-text-centered">{{hashflag.starting | doDate}} - {{hashflag.ending | doDate}}</small>
@@ -258,10 +258,10 @@ html {
   }
 
   .item-hashflag {
-  	min-height: 260px;
-  	display: flex;
-  	align-items: center;
-  	justify-content: center;
+    min-height: 260px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 </style>
 

@@ -12,5 +12,8 @@
   "loading": "Carregando as hashflags",
   "more_1": "E",
   "more_2": "mais...",
-  "footer": "Orgulhosamente feito por"
+  "footer": "Orgulhosamente feito por",
+  "single_title": "Dados sobre esta campanha:",
+  "single_date_entry": "Data de entrada:",
+  "single_date_ending": "Data de saída:"
 }
