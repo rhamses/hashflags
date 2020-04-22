@@ -105,11 +105,11 @@ export default {
     this.campaingName = this.$route.params.campaingName;
     this.urlHashflag = this.$route.params.hashflag;
 
-    // if (this.urlHashflag) {
-    //   document.querySelector('meta[property="og:image"').content = `https://hashflags.s3.amazonaws.com/social-media/${this.campaingName}_${this.urlHashflag}.png`
-    // } else {
-    //   document.querySelector('meta[property="og:image"').content = "https://hashflags.s3.amazonaws.com/social-media/hashflags-frame.png"
-    // }
+    if (this.urlHashflag) {
+      document.querySelector('meta[property="og:image"').content = `https://hashflags.s3.amazonaws.com/social-media/${this.campaingName}_${this.urlHashflag}.png`
+    } else {
+      document.querySelector('meta[property="og:image"').content = "https://hashflags.s3.amazonaws.com/social-media/hashflags-frame.png"
+    }
 
     this.$axios.get(`${process.env.VUE_APP_API}/hashflags/${this.campaingName}`).then(response => {
       if (response.status === 200) {
