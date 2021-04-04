@@ -3,3 +3,4 @@ node_modules
 .env
 .env.production
 dist
+v2.0/node_modules
