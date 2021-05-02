@@ -1,12 +1,12 @@
 <template>
   <div class="flex flex-col justify-between max-w-sm rounded overflow-hidden shadow-lg h-50 pt-5 overflow-hidden bg-white">
     <div class="flex">
-      <figure class="ml-10 mr-5 flex flex-col justify-center hash--image">
+      <figure class="ml-10 mr-2 flex flex-col justify-center hash--image">
         <img :src="hashflag.assetUrl.original" alt="Mountain">  
       </figure>
-      <div class="px-6 pt-4 pb-2">
+      <div class="pt-4 pb-2">
         <Hashtag :hashtag="hashflag.hashtag[0]" />
-        <router-link class="block text-center text-blue-800 text-xs" to="/details" v-if="total > 0"> and {{ total }} more hashtags</router-link>
+        <router-link class="block text-center break-words text-blue-800 text-xs" to="/details" v-if="total > 0"> and {{ total }} more hashtags</router-link>
       </div>
     </div>
     <router-link 

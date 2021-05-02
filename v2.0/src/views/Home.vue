@@ -1,7 +1,7 @@
 <template>
   <section class="bg-blue-50">
     <Header class="sticky top-0 w-full" />
-    <GalleryHashflags />
+    <GalleryHashflags class="p-10" />
   </section>
 </template>
 

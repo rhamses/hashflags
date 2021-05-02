@@ -1,5 +1,5 @@
 <template>
-  <section class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-10">
+  <section class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
     <article v-for="item in items" class="flex justify-center" v-if="items.length > 0 ">
       <Card :hashflag="item" class="flex-1" /> 
     </article>
