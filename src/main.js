@@ -1,15 +1,6 @@
-import Vue from 'vue'
-import './plugins/axios'
-import LazyLoad from 'vue-lazyload';
+import { createApp } from 'vue'
+import Router from './router/index.js'
 import App from './App.vue'
-import i18n from './i18n'
-import router from './router'
-Vue.use(LazyLoad);
+import './index.css'
 
-Vue.config.productionTip = false
-
-new Vue({
-  i18n,
-  router,
-  render: h => h(App)
-}).$mount('#app')
+createApp(App).use(Router).mount('#app')
