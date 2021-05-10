@@ -1,7 +1,9 @@
 <template>
   <section class="bg-blue-50">
     <Header class="sticky top-0 w-full" />
-    <GalleryHashflags class="p-10" />
+    <keep-alive>
+      <GalleryHashflags class="p-10" />
+    </keep-alive>
   </section>
 </template>
 
