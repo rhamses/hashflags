@@ -6,7 +6,7 @@
           <div class="flex items-center">
             <div class="flex-shrink-0">
               <router-link to="/">
-                <img class="h-8 w-8" src="https://tailwindui.com/img/logos/workflow-mark-indigo-500.svg" alt="Workflow">
+                <img class="h-8 w-8" src="../../public/favicon.svg" alt="Workflow">
               </router-link>
             </div>
             <h1 class="site--title text-white text-xl font-normal leading-normal ml-3">
