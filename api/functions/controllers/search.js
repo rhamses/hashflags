@@ -1,6 +1,6 @@
 const client = require("../config.js")();
 
-module.exports = async (search) => {
+module.exports = async function(search) {
   console.log("search", search);
   const db = await client;
   return await db.collection('entries').aggregate([

@@ -69,7 +69,8 @@ exports.timeline = functions.https.onRequest(async (req, res) => {
     try {
       const hashtag = ( req.params[0].match(/\w/gmi) ) ? req.params[0].match(/\w/gmi).join("") : null;
       if (hashtag) {
-        const result = await Timeline(hashtag);
+        const twitterApi = functions.config().hashflags.twitterapi;
+        const result = await Timeline(hashtag, twitterApi);
         res.send(result);
       } else {
         throw('Error')

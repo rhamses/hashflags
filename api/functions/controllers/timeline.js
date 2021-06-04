@@ -1,11 +1,12 @@
 const axios = require("axios");
+const dotenv = require("dotenv");
 
-module.exports = async (hashtag) => {
+module.exports = async function(hashtag, twitterApi) {
   const config = {
     method: 'get',
     url: `https://api.twitter.com/2/tweets/search/recent?query=%23${hashtag}&expansions=author_id&user.fields=profile_image_url,verified&media.fields=duration_ms,height,media_key,preview_image_url,public_metrics,type,url,width`,
     headers: { 
-      'Authorization': 'Bearer AAAAAAAAAAAAAAAAAAAAAEs9DwEAAAAAlBZxzGuMY6XWzM2eS9On4A%2FXFpA%3D7elc0RiJ3IBbMqzUNqpYDongUIPSkabTMQpY67UJPGAJlkwS2o', 
+      'Authorization': `Bearer ${twitterApi}`, 
     }
   };
 
