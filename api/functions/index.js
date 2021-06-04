@@ -3,6 +3,7 @@ const cors = require('cors')({origin: true});
 const List = require('./controllers/list.js');
 const Search = require('./controllers/search.js');
 const Details = require('./controllers/details.js');
+const Timeline = require('./controllers/timeline.js');
 
 exports.list = functions.https.onRequest(async (req, res) => {
   cors(req, res, async () => {
@@ -51,6 +52,24 @@ exports.details = functions.https.onRequest(async (req, res) => {
       const campaign = ( req.params[0].match(/\w/gmi) ) ? req.params[0].match(/\w/gmi).join("") : null;
       if (campaign) {
         const result = await Details(campaign); 
+        res.send(result);
+      } else {
+        throw('Error')
+      }
+    } catch(e) {
+      console.log(e);
+      // statements
+      res.send(404,'Erro');
+    }
+  })
+});
+
+exports.timeline = functions.https.onRequest(async (req, res) => {
+  cors(req, res, async () => {
+    try {
+      const hashtag = ( req.params[0].match(/\w/gmi) ) ? req.params[0].match(/\w/gmi).join("") : null;
+      if (hashtag) {
+        const result = await Timeline(hashtag);
         res.send(result);
       } else {
         throw('Error')
