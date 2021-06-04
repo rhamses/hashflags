@@ -20,16 +20,16 @@
     data(){
       return {
         items:  [],
-        fold: 0,
+        fold: 1,
         loading: true
       }
     },
     methods:  {
       loadItems(){
-        fetch(`${import.meta.env.VITE_API}/hashflags/list?page=50&skip=${this.fold}`)
+        fetch(`${import.meta.env.VITE_API}/list/${this.fold}?items=50`)
         .then(response => response.json())
         .then(response => {
-          response.hashflags.map(hl => this.items.push(hl));
+          response.map(hl => this.items.push(hl));
           this.loading = !this.loading;
         })
         .catch(e => console.log("e", e));
@@ -41,7 +41,7 @@
           if (actualScroll >= bodySize * .5 && this.loading === false) {
             this.loading = !this.loading;
             window.setTimeout(function(vue) {
-              vue.fold = (vue.fold > 0) ? vue.fold + 50 : 50;
+              vue.fold = (vue.fold > 0) ? vue.fold + 1 : 1;
               vue.loadItems();
             }, 500, this) 
           }

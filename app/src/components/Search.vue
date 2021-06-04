@@ -40,10 +40,10 @@
           this.timer = null;
         } else if(this.query.length !== 0) {
           this.timer = setTimeout(() => {
-            fetch(`${import.meta.env.VITE_API}/hashflags/search?q=${this.query}`)
+            fetch(`${import.meta.env.VITE_API}/search?q=${this.query}`)
             .then(response => response.json())
             .then(response => {
-              this.results = [...response.items];
+              this.results = [...response];
             })
             .catch(e => console.log("e", e));
           }, 1000);

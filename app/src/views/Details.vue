@@ -71,10 +71,10 @@
     methods: {
       loadHashflag(){
         const campaign = this.$route.params.campaign;
-        fetch(`${import.meta.env.VITE_API}/hashflags/${campaign}`)
+        fetch(`${import.meta.env.VITE_API}/details/${campaign}`)
         .then(response => response.json())
         .then(response => {
-          this.hashflag = response.hashflags[0];
+          this.hashflag = response[0];
           this.loadTweetsByHashtag();
         })
         .catch(e => console.log("e", e));
@@ -87,7 +87,7 @@
         } else {
           campaign = this.hashflag.hashtag[0];
         }
-        fetch(`${import.meta.env.VITE_API}/hashflags/timeline?hashtag=${campaign}`)
+        fetch(`${import.meta.env.VITE_API}/timeline/${campaign}`)
         .then(response => response.json())
         .then(response => {
           this.timeline = response;
