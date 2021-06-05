@@ -20,7 +20,7 @@
     data(){
       return {
         items:  [],
-        fold: 1,
+        fold: 0,
         loading: true
       }
     },

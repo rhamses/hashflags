@@ -9,7 +9,7 @@ exports.list = functions.https.onRequest(async (req, res) => {
   cors(req, res, async () => {
     try {
       let considerPagination = false;
-      const page = (parseInt(req.params[0].match(/\d/gmi))) ? parseInt(req.params[0].match(/\d/gmi)) : 1;
+      const page = (parseInt(req.params[0].match(/\d/gmi))) ? parseInt(req.params[0].match(/\d/gmi)) : 0;
       const items = (req.query.items) ? parseInt(req.query.items) : 10;
       const skip = page * items;
       const pagination = {
