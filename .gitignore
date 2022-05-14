@@ -4,3 +4,4 @@ node_modules
 .env.production
 dist
 v2.0/node_modules
+prova/

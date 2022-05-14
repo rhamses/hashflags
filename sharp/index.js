@@ -3,27 +3,29 @@ const { parse }  = require('svgson')
 const TextToSVG = require('text-to-svg');
 
 async function createText(params){
-  let {fontSize, width: canvasWidth} = params
+  let {fontSize, fontPath, width: canvasWidth, text, textOptions: attributes } = params
   if (!fontSize) {
     fontSize = 90
   }
   if(!canvasWidth) {
     canvasWidth = 1200
   }
+  if(!text) {
+    reject({err: "Text not found"})
+  }
+  if(!fontPath){
+    fontPath = './fonts/default.ttf'
+  }
   return new Promise((resolve, reject) => {
-    TextToSVG.load('./font.ttf', async function(err, textToSVG) {
-      const attributes = {
-        fill: 'rgb(59, 130, 246)', 
-        stroke: 'white'
-      };
+    TextToSVG.load(fontPath, async function(err, textToSVG) {
       const options = {
         x: 0,
         y: 0,
         fontSize,
         anchor: 'top',
-        attributes: attributes
+        attributes
       };
-      const svg = textToSVG.getSVG('#DarthVader', options);
+      const svg = textToSVG.getSVG(text, options);
       // Check image boundaries
       const svgJson = await parse(svg);
       if(svgJson.attributes.width >= canvasWidth) {
@@ -53,6 +55,14 @@ async function start(params){
   // load assets
   const image = await createImage();
   const text = await createText({...canvasDimensions, ...params});
+  const credits = await createText({
+    fontPath: './fonts/Nunito-SemiBold.ttf',
+    fontSize: 20,
+    text: "@hashflagsbot",
+    textOptions: {
+      fill: '#B6C8E0'
+    }
+  })
   // math positions
   const textPos = {
     top: Math.round((canvasDimensions.height - text.height) / 2),
@@ -61,6 +71,10 @@ async function start(params){
   const imagePos = {
     top: Math.round((canvasDimensions.height - image.height) / 2),
     left: (textPos.left + text.width + 10) - image.width
+  }
+  const creditsPos = {
+    top: Math.round((canvasDimensions.height - credits.height) / 2 + text.height - 30),
+    left: Math.round((canvasDimensions.width - credits.width) / 2)
   }
   // image instance
   compositing.push({
@@ -73,6 +87,12 @@ async function start(params){
     input: text.buffer,
     top: textPos.top,
     left: textPos.left - image.width / 2
+  })
+  // credits instance
+  compositing.push({
+    input: credits.buffer,
+    top: creditsPos.top,
+    left: creditsPos.left
   })
   // new blank image
   const sharpNewImage = {
@@ -91,7 +111,7 @@ async function start(params){
   // compositing
   newImage.composite(compositing);
   // export
-  newImage.toFile('teste.png', (err) => {
+  newImage.toFile('./prova/teste.png', (err) => {
     if(err) console.log(err)
   })
   } catch (error) {
@@ -103,29 +123,11 @@ async function start(params){
   }
 }
 
-start();
-// text();
-
-
-/*
-SVG PILL 
-`<svg viewBox="0 0 280 80" xmlns="http://www.w3.org/2000/svg">
-  <style>
-    .pill {
-      fill: rgb(59, 130, 246);
-      stroke: #fff;
-      stroke-width: .2
-    }
-    .text {
-      fill: #fff;
-      font-family: 'Arial';
-      font-size: 16px
-    }
-  </style>
-  <g>
-    <rect class="pill" x="1" y="0" width="110" height="20" ry="10" rx="10" />
-    <text class="text" x="10" y="15">#DarthVader</text>
-  </g>
-</svg>
-`
-*/
+start({
+  fontPath: './fonts/Lato-Bold.ttf',
+  text: '#DarthVader',
+  textOptions: {
+    fill: 'rgb(59, 130, 246)',
+    stroke: 'white'
+  }
+});
