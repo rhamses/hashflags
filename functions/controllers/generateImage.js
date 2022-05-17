@@ -1,23 +1,29 @@
 const sharp = require('sharp')
 const { parse }  = require('svgson')
 const TextToSVG = require('text-to-svg');
-
+const path = require('path')
+const homeDir = __dirname.split("/")
+homeDir.pop()
+const fontsFolder = path.join(homeDir.join("/"), 'fonts')
+const provaFolder = path.join(homeDir.join("/"), 'prova')
 async function createText(params){
   let {fontSize, fontPath, width: canvasWidth, text, textOptions: attributes } = params
   if (!fontSize) {
-    fontSize = 90
+    fontSize = 70
   }
   if(!canvasWidth) {
-    canvasWidth = 1200
+    canvasWidth = 1200 - 70 // canvasWidth - imageSize
   }
   if(!text) {
     reject({err: "Text not found"})
   }
   if(!fontPath){
-    fontPath = './fonts/default.ttf'
+    fontPath = `${fontsFolder}/default.ttf`
   }
+  // console.log("asd", __dirname, path.relative(__dirname, ''))
   return new Promise((resolve, reject) => {
     TextToSVG.load(fontPath, async function(err, textToSVG) {
+      if(err) reject(err)
       const options = {
         x: 0,
         y: 0,
@@ -28,6 +34,7 @@ async function createText(params){
       const svg = textToSVG.getSVG(text, options);
       // Check image boundaries
       const svgJson = await parse(svg);
+      // console.log(svgJson.attributes.width, canvasWidth)
       if(svgJson.attributes.width >= canvasWidth) {
         reject({err: "image right at boundaries", params: {...params, fontSize}})
       } else {
@@ -43,7 +50,10 @@ async function createText(params){
 
 async function createImage(params){
   try {
-    const { image } = params;
+    let { image } = params;
+    if(!image) {
+      image = '../sharp/dv.png'
+    }
     const baseImage = sharp(image)
     const { width, height } = await baseImage.metadata()
     const buffer = await baseImage.toBuffer()
@@ -61,7 +71,7 @@ module.exports = async function(params){
   const image = await createImage({...params});
   const text = await createText({...canvasDimensions, ...params});
   const credits = await createText({
-    fontPath: './fonts/Nunito-SemiBold.ttf',
+    fontPath: `${fontsFolder}/Nunito-SemiBold.ttf`,
     fontSize: 20,
     text: "@hashflagsbot",
     textOptions: {
@@ -116,7 +126,7 @@ module.exports = async function(params){
   // compositing
   newImage.composite(compositing);
   // export
-  newImage.toFile('./prova/teste.png', (err) => {
+  newImage.toFile(`${provaFolder}/teste1.png`, (err) => {
     if(err) console.log(err)
   })
   } catch (error) {
