@@ -85,7 +85,7 @@ module.exports = functions
       config.image = await getBuffer(assetUrl);
       const newImage = await generateImage(config);
       const mediaID = await uploadImage(newImage.image, TwitterClient);
-      const result = await postTweet({mediaID, hashtag, TwitterClient});
+      const result = await postTweet({mediaID, tweet: hashtag, TwitterClient});
 
       response.send(result);
     });
