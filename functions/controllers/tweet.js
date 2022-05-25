@@ -67,13 +67,14 @@ module.exports = functions
         accessToken: process.env.ACCESSTOKEN,
         accessSecret: process.env.ACCESSSECRET,
       });
-      const {
+      let {
         // campaignName,
         hashtag,
         assetUrl,
         // startingTimestampMs,
         // endingTimestampMs,
       } = request.body;
+      hashtag = `#${hashtag}`;
       const config = {
         text: hashtag,
         textOptions: {
@@ -81,11 +82,10 @@ module.exports = functions
           stroke: "white",
         },
       };
-      const tweet = `#${hashtag}`;
       config.image = await getBuffer(assetUrl);
       const newImage = await generateImage(config);
       const mediaID = await uploadImage(newImage.image, TwitterClient);
-      const result = await postTweet({mediaID, tweet, TwitterClient});
+      const result = await postTweet({mediaID, hashtag, TwitterClient});
 
       response.send(result);
     });

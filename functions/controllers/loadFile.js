@@ -12,20 +12,27 @@ async function getCurrentFlags() {
   const month = String(new Date().getUTCMonth() + 1).padStart(2, "0");
   const day = String(new Date().getUTCDate()).padStart(2, "0");
   const hour = String(new Date().getUTCHours() + 1).padStart(2, "0");
+  // const day = "25";
+  // const hour = "07";
   const toFilter = {
-    begin: getTime(new Date(new Date().getFullYear(),
-        new Date().getUTCMonth(),
-        Number(day), 0, 0, 0)),
-    end: getTime(new Date(
-        new Date().getFullYear(),
-        new Date().getUTCMonth(),
-        Number(day), 23, 59, 59)),
+    begin: getTime(
+        new Date(
+            new Date().getFullYear(),
+            new Date().getUTCMonth(),
+            Number(day),
+            Number(hour), 0, 0)),
+    end: getTime(
+        new Date(
+            new Date().getFullYear(),
+            new Date().getUTCMonth(),
+            Number(day),
+            Number(hour), 59, 59)),
   };
+  // console.log(toFilter);
   // console.log(`https://pbs.twimg.com/hashflag/config-${year}-${month}-${day}-${hour}.json`);
   let hashflags = await getJSON(`https://pbs.twimg.com/hashflag/config-${year}-${month}-${day}-${hour}.json`);
   hashflags = hashflags.filter((item) => {
-    if (item.startingTimestampMs >= toFilter.begin &&
-      item.startingTimestampMs <= toFilter.end) {
+    if (item.startingTimestampMs >= toFilter.begin) {
       return item;
     }
   });
@@ -80,8 +87,8 @@ module.exports = functions
     .https.onRequest(async (request, response) => {
       try {
         const hashflags = await getCurrentFlags();
-        let countHashflag = 0;
         if (Object.keys(hashflags).length > 0) {
+          let countHashflag = 0;
           for (const campaignName of Object.keys(hashflags)) {
             for (const hashflag of hashflags[campaignName].entries()) {
               if (hashflag[1]) {
@@ -90,10 +97,12 @@ module.exports = functions
               }
             }
           }
+        } else {
+          functions.logger.info("hashflags é vazio");
         }
         response.send(hashflags);
       } catch (error) {
-        console.log("error", error);
+        functions.logger.error(error);
         response.send("deu pau");
       }
     });

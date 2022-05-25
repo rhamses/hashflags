@@ -13,7 +13,7 @@ module.exports = functions
         // endingTimestampMs,
       } = request.body;
       const config = {
-        text: hashtag,
+        text: "#"+hashtag,
         textOptions: {
           fill: "rgb(59, 130, 246)",
           stroke: "white",
