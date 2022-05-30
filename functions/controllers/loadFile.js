@@ -3,15 +3,17 @@ const bent = require("bent");
 const getJSON = bent("json");
 const {getTime} = require("date-fns");
 const {CloudTasksClient} = require("@google-cloud/tasks");
+const fs = require("fs");
 /**
 * Function that get the current hashflags file.
 * @return {object}
 */
 async function getCurrentFlags() {
+  const result = {};
   const year = new Date().getFullYear();
   const month = String(new Date().getUTCMonth() + 1).padStart(2, "0");
   const day = String(new Date().getUTCDate()).padStart(2, "0");
-  const hour = String(new Date().getUTCHours() + 1).padStart(2, "0");
+  const hour = String(new Date().getUTCHours()).padStart(2, "0");
   // const day = "25";
   // const hour = "07";
   const toFilter = {
@@ -30,14 +32,25 @@ async function getCurrentFlags() {
   };
   // console.log(toFilter);
   // console.log(`https://pbs.twimg.com/hashflag/config-${year}-${month}-${day}-${hour}.json`);
-  let hashflags = await getJSON(`https://pbs.twimg.com/hashflag/config-${year}-${month}-${day}-${hour}.json`);
-  hashflags = hashflags.filter((item) => {
+
+  // Get the hashflags based on current time.
+  const hashflags = await getJSON(`https://pbs.twimg.com/hashflag/config-${year}-${month}-${day}-${hour}.json`);
+  let newHashflags = [];
+  newHashflags = hashflags.filter((item) => {
     if (item.startingTimestampMs >= toFilter.begin) {
       return item;
     }
   });
-  const result = {};
-  for (const flag of hashflags) {
+  // Loop through the new array to fill the limit of
+  // at least 4 tweets with random arrays from the file
+  while (newHashflags.length < 4) {
+    const index = Math.floor((Math.random() * (hashflags.length - 0 + 1)) + 0);
+    const hasItem = newHashflags.find((item) => item.hashtag == hashflags[index].hashtag);
+    if (!hasItem) {
+      newHashflags.push(hashflags[index]);
+    }
+  }
+  for (const flag of newHashflags) {
     if (result[flag.campaignName]) {
       result[flag.campaignName].push(flag);
     } else {
@@ -55,12 +68,13 @@ async function getCurrentFlags() {
 async function queueItem(index, hashflag) {
   const projectId = "hashflags-1866b";
   const location = "us-central1";
-  const queue = "tweet";
+  const queue = "tweet-lab";
   const functionName = "tweet";
   const tasksClient = new CloudTasksClient();
   const queuePath = tasksClient.queuePath(projectId, location, queue);
   const url = `https://${location}-${projectId}.cloudfunctions.net/${functionName}`;
-  const delaySeconds = 30 * index;
+  const lastRun = Number(fs.readFileSync("lastRun.txt")) ? Number(fs.readFileSync("lastRun.txt")) : Date.now() / 1000;
+  const delaySeconds = 900 * (index + 1);
   const data = Buffer
       .from(JSON.stringify(hashflag))
       .toString("base64");
@@ -74,9 +88,10 @@ async function queueItem(index, hashflag) {
       },
     },
     scheduleTime: {
-      seconds: Math.floor(delaySeconds + Date.now() / 1000),
+      seconds: Math.floor(delaySeconds + lastRun),
     },
   };
+  // console.log(task);
   return await tasksClient.createTask({
     parent: queuePath,
     task,
@@ -87,12 +102,14 @@ module.exports = functions
     .https.onRequest(async (request, response) => {
       try {
         const hashflags = await getCurrentFlags();
+        const result = [];
         if (Object.keys(hashflags).length > 0) {
           let countHashflag = 0;
           for (const campaignName of Object.keys(hashflags)) {
             for (const hashflag of hashflags[campaignName].entries()) {
               if (hashflag[1]) {
-                await queueItem(countHashflag, hashflag[1]);
+                const ticket = await queueItem(countHashflag, hashflag[1]);
+                result.push(ticket);
                 countHashflag++;
               }
             }
@@ -100,6 +117,15 @@ module.exports = functions
         } else {
           functions.logger.info("hashflags é vazio");
         }
+        // Get last confirmation from GCP Cloud Task
+        // And save into a file to use as base line
+        // for the next run
+        const lastRun = result.map((item) => item[0].scheduleTime).pop();
+        functions.logger.info(lastRun);
+        fs.writeFile("lastrun.txt", lastRun.seconds, (error) => {
+          if (error) functions.logger.error(error);
+        });
+        // Send the current hashflags list forward
         response.send(hashflags);
       } catch (error) {
         functions.logger.error(error);
