@@ -17,6 +17,7 @@ async function getCurrentFlags() {
   // const day = "25";
   // const hour = "07";
   const toFilter = {
+    // begin: 1653840000000,
     begin: getTime(
         new Date(
             new Date().getFullYear(),
@@ -35,6 +36,7 @@ async function getCurrentFlags() {
 
   // Get the hashflags based on current time.
   const hashflags = await getJSON(`https://pbs.twimg.com/hashflag/config-${year}-${month}-${day}-${hour}.json`);
+  // const hashflags = await getJSON("https://pbs.twimg.com/hashflag/config-2022-05-29-23.json");
   let newHashflags = [];
   newHashflags = hashflags.filter((item) => {
     if (item.startingTimestampMs >= toFilter.begin) {
@@ -68,7 +70,7 @@ async function getCurrentFlags() {
 async function queueItem(index, hashflag) {
   const projectId = "hashflags-1866b";
   const location = "us-central1";
-  const queue = "tweet-lab";
+  const queue = "tweet";
   const functionName = "tweet";
   const tasksClient = new CloudTasksClient();
   const queuePath = tasksClient.queuePath(projectId, location, queue);
@@ -117,9 +119,9 @@ module.exports = functions
         } else {
           functions.logger.info("hashflags é vazio");
         }
-        // Get last confirmation from GCP Cloud Task
-        // And save into a file to use as base line
-        // for the next run
+        /* Get last confirmation from GCP Cloud Task
+        And save into a file to use as base line
+        for the next run */
         const lastRun = result.map((item) => item[0].scheduleTime).pop();
         functions.logger.info(lastRun);
         fs.writeFile("lastrun.txt", lastRun.seconds, (error) => {
