@@ -4,6 +4,12 @@ const getJSON = bent("json");
 const {getTime} = require("date-fns");
 const {CloudTasksClient} = require("@google-cloud/tasks");
 const fs = require("fs");
+const os = require("os");
+// const path = require("path");
+// const root = path.dirname(path.abspath());
+// file_path = "/tmp/" + file_name;
+// file_path = path.join(root, file_path);
+const lastRunFile = os.tmpdir() + "/lastrun.txt";
 /**
 * Function that get the current hashflags file.
 * @return {object}
@@ -75,7 +81,7 @@ async function queueItem(index, hashflag) {
   const tasksClient = new CloudTasksClient();
   const queuePath = tasksClient.queuePath(projectId, location, queue);
   const url = `https://${location}-${projectId}.cloudfunctions.net/${functionName}`;
-  const lastRun = Number(fs.readFileSync("lastRun.txt")) ? Number(fs.readFileSync("lastRun.txt")) : Date.now() / 1000;
+  const lastRun = Number(fs.readFileSync(lastRunFile)) ? Number(fs.readFileSync(lastRunFile)) : Date.now() / 1000;
   const delaySeconds = 900 * (index + 1);
   const data = Buffer
       .from(JSON.stringify(hashflag))
@@ -103,6 +109,10 @@ async function queueItem(index, hashflag) {
 module.exports = functions
     .https.onRequest(async (request, response) => {
       try {
+        console.log();
+        if (!fs.existsSync(lastRunFile)) {
+          fs.writeFileSync(lastRunFile, "");
+        }
         const hashflags = await getCurrentFlags();
         const result = [];
         if (Object.keys(hashflags).length > 0) {
@@ -124,7 +134,7 @@ module.exports = functions
         for the next run */
         const lastRun = result.map((item) => item[0].scheduleTime).pop();
         functions.logger.info(lastRun);
-        fs.writeFile("lastrun.txt", lastRun.seconds, (error) => {
+        fs.writeFile(lastRunFile, lastRun.seconds, (error) => {
           if (error) functions.logger.error(error);
         });
         // Send the current hashflags list forward
