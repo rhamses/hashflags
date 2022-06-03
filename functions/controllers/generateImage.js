@@ -26,13 +26,15 @@ async function createText(params) {
     return {err: "Text not found"};
   }
   if (!fontPath) {
-    // Check if text has Japanese / Korean / Thai letters
+    // Check if text has Japanese / Korean / Thai / Arabic letters
     if (text.match(/[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf\u3400-\u4dbf]/gmi)) {
       fontPath = "RocknRollOne-Regular.ttf";
     } else if (text.match(/[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g)) {
       fontPath = "NotoSansKR-Medium.otf";
     } else if (text.match(/[\u0E00-\u0E7F]/g)) {
       fontPath = "IBMPlexSansThaiLooped-Medium.ttf";
+    } else if (text.match(/[\u0600-\u06FF-\u0750-\u077F-\u0870-\u089F-\uFB50-\uFDFF-\uFE70-\uFEFF-\u10E60-\u10E7F-\u1EC70-\u1ECBF-\u1ED00-\u1ED4F-\u1EE00-\u1EEFF]/g)) {
+      fontPath = "Almarai-Regular.ttf";
     } else {
       fontPath = "default.ttf";
     }
