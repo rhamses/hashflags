@@ -23,6 +23,8 @@ async function createText(params) {
   }
   if (!canvasWidth) {
     canvasWidth = 1200 - 70; // canvasWidth - imageSize
+  } else {
+    canvasWidth = canvasWidth - 70;
   }
   if (!text) {
     return {err: "Text not found"};
@@ -56,7 +58,8 @@ async function createText(params) {
       const svg = textToSVG.getSVG(text, options);
       // Check image boundaries
       const svgJson = await parse(svg);
-      // console.log(svgJson.attributes.width, canvasWidth)
+      // console.log(svgJson);
+      console.log(svgJson.attributes.width, canvasWidth);
       if (svgJson.attributes.width >= canvasWidth) {
         reject({err: "image right at boundaries", params: {...params, fontSize}});
       } else {
@@ -76,19 +79,22 @@ async function createText(params) {
 */
 async function createImage(params) {
   try {
-    let {image} = params;
-    if (!image) {
-      image = "../sharp/dv.png";
-    }
+    console.log(params);
+    const {image} = params;
     const baseImage = sharp(image);
     const {width, height} = await baseImage.metadata();
     const buffer = await baseImage.toBuffer();
     return {width, height, buffer};
   } catch (error) {
-    return null;
+    return error;
   }
 }
-module.exports = async function(params) {
+/**
+* Generates an image from a object options
+* @param {object} params Buffer da imagem para ser feito o upload.
+* @return {object}
+*/
+async function start(params) {
   return new Promise(async function(resolve, reject) {
     try {
     // compositing and instanciate canvas
@@ -152,23 +158,23 @@ module.exports = async function(params) {
       const newImage = sharp(sharpNewImage).png({quality: 100});
       // compositing
       newImage.composite(compositing);
-      // exporting image
-
-      // newImage.toFile(`${provaFolder}/${params.text}-1.png`, (err) => {
-      //   if(err) console.log(err)
-      //   resolve(true)
-      // })
 
       newImage.toBuffer((err, data, info) => {
         if (err) reject(err);
         resolve({image: data, info});
       });
     } catch (error) {
-      console.log(error);
       if (error.err && error.err == "image right at boundaries") {
-        // const fontSize = error.params.fontSize - 10;
-        // start({fontSize});
+        error.params.fontSize = error.params.fontSize - 10;
+        reject(error);
       }
     }
   });
+}
+module.exports = async function(params) {
+  try {
+    return await start(params);
+  } catch (error) {
+    return await start(error.params);
+  }
 };
