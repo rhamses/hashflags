@@ -5,6 +5,8 @@ const path = require("path");
 const homeDir = __dirname.split("/");
 homeDir.pop();
 const fontsFolder = path.join(homeDir.join("/"), "fonts");
+const CANVAS_WIDTH = 1200;
+const CANVAS_HEIGHT = 675;
 // const provaFolder = path.join(homeDir.join("/"), "prova");
 /**
 * Given a text and a few attributes, returns a text
@@ -15,16 +17,10 @@ const fontsFolder = path.join(homeDir.join("/"), "fonts");
 async function createText(params) {
   let {fontSize,
     fontPath,
-    width: canvasWidth,
     text,
     textOptions: attributes} = params;
   if (!fontSize) {
     fontSize = 70;
-  }
-  if (!canvasWidth) {
-    canvasWidth = 1200 - 70; // canvasWidth - imageSize
-  } else {
-    canvasWidth = canvasWidth - 70;
   }
   if (!text) {
     return {err: "Text not found"};
@@ -55,19 +51,21 @@ async function createText(params) {
         anchor: "top",
         attributes,
       };
+      // console.log("fontSize -->", fontSize);
       const svg = textToSVG.getSVG(text, options);
       // Check image boundaries
       const svgJson = await parse(svg);
       // console.log(svgJson);
-      console.log(svgJson.attributes.width, canvasWidth);
-      if (svgJson.attributes.width >= canvasWidth) {
-        reject({err: "image right at boundaries", params: {...params, fontSize}});
+      // console.log(svgJson.attributes.width, (CANVAS_WIDTH - 70));
+      if (svgJson.attributes.width >= (CANVAS_WIDTH - 70)) {
+        fontSize = fontSize - 10;
+        resolve(createText({...params, fontSize}));
       } else {
         const image = Buffer.from(svg);
-        const text = await sharp(image).png();
-        const {width, height} = await text.metadata();
-        const buffer = await text.toBuffer();
-        resolve( {width, height, buffer});
+        const textSharp = await sharp(image).png();
+        const {width, height} = await textSharp.metadata();
+        const buffer = await textSharp.toBuffer();
+        resolve({width, height, buffer});
       }
     });
   });
@@ -79,7 +77,6 @@ async function createText(params) {
 */
 async function createImage(params) {
   try {
-    console.log(params);
     const {image} = params;
     const baseImage = sharp(image);
     const {width, height} = await baseImage.metadata();
@@ -89,17 +86,12 @@ async function createImage(params) {
     return error;
   }
 }
-/**
-* Generates an image from a object options
-* @param {object} params Buffer da imagem para ser feito o upload.
-* @return {object}
-*/
-async function start(params) {
+module.exports = async function(params) {
   return new Promise(async function(resolve, reject) {
     try {
     // compositing and instanciate canvas
       const compositing = [];
-      const canvasDimensions = {width: 1200, height: 675};
+      const canvasDimensions = {width: CANVAS_WIDTH, height: CANVAS_HEIGHT};
       // load assets
       const image = await createImage({...params});
       const text = await createText({...canvasDimensions, ...params});
@@ -170,11 +162,4 @@ async function start(params) {
       }
     }
   });
-}
-module.exports = async function(params) {
-  try {
-    return await start(params);
-  } catch (error) {
-    return await start(error.params);
-  }
 };

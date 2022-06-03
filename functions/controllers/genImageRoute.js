@@ -21,6 +21,5 @@ module.exports = functions
       };
       config.image = await getBuffer(assetUrl);
       const newImage = await generateImage(config);
-
       response.send(`<img src="data:image/png;base64,${newImage.image.toString("base64")}">`);
     });
