@@ -5,10 +5,6 @@ const {getTime} = require("date-fns");
 const {CloudTasksClient} = require("@google-cloud/tasks");
 const fs = require("fs");
 const os = require("os");
-// const path = require("path");
-// const root = path.dirname(path.abspath());
-// file_path = "/tmp/" + file_name;
-// file_path = path.join(root, file_path);
 const lastRunFile = os.tmpdir() + "/lastrun.txt";
 /**
 * Function that get the current hashflags file.
@@ -50,8 +46,8 @@ async function getCurrentFlags() {
     }
   });
   // Loop through the new array to fill the limit of
-  // at least 4 tweets with random arrays from the file
-  while (newHashflags.length < 4) {
+  // at least 2 tweets with random arrays from the file
+  while (newHashflags.length < 2) {
     const index = Math.floor((Math.random() * (hashflags.length - 0 + 1)) + 0);
     const hasItem = newHashflags.find((item) => item.hashtag == hashflags[index].hashtag);
     if (!hasItem) {
@@ -82,7 +78,7 @@ async function queueItem(index, hashflag) {
   const queuePath = tasksClient.queuePath(projectId, location, queue);
   const url = `https://${location}-${projectId}.cloudfunctions.net/${functionName}`;
   const lastRun = Number(fs.readFileSync(lastRunFile)) ? Number(fs.readFileSync(lastRunFile)) : Date.now() / 1000;
-  const delaySeconds = 900 * (index + 1);
+  const delaySeconds = 1800 * (index + 1);
   const data = Buffer
       .from(JSON.stringify(hashflag))
       .toString("base64");
