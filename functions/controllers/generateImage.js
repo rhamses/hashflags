@@ -33,7 +33,7 @@ async function createText(params) {
       fontPath = "NotoSansKR-Medium.otf";
     } else if (text.match(/[\u0E00-\u0E7F]/g)) {
       fontPath = "IBMPlexSansThaiLooped-Medium.ttf";
-    } else if (text.match(/[\u0600-\u06FF-\u0750-\u077F-\u0870-\u089F-\uFB50-\uFDFF-\uFE70-\uFEFF-\u10E60-\u10E7F-\u1EC70-\u1ECBF-\u1ED00-\u1ED4F-\u1EE00-\u1EEFF]/g)) {
+    } else if (text.match(/[\u0621-\u064A]/g)) {
       fontPath = "Almarai-Regular.ttf";
     } else {
       fontPath = "default.ttf";
