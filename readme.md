@@ -1,12 +1,12 @@
 # Hashflags
 ![Hashflags Project Banner](https://pbs.twimg.com/profile_banners/1201013896053690368/1653994887/1500x500)
-A project that seeks to archive and frame forever the beautiful artwork that Twitter's team consistenly put out in form of advertised #hashtags. Because they are time sensitive all hashflags have a expire date but, since 2019, I've been collecting and storing this information and looking for different ways to put to the entire world to see all the cool little badges created for a certain ad campaign that crossed Twitter's ecosystem. Here's a few outlets that I managed to created until now.  
+A project that seeks to archive and frame forever the beautiful artwork that Twitter's team consistenly put out in form of advertised #hashtags. Because they are time sensitive all hashflags have a expire date, but since 2019 I've been collecting and storing this information and looking for different ways to put to the entire world to see all the cool little badges created for a certain ad campaign that crossed Twitter's ecosystem. Here's a few outlets that I managed to created until now.  
 
 ## 🤖 Twitter Bot
 Originally thought as a Twitter bot, it was just recent that it come to life. you can see it in **[@hashflagsbot](https://twitter.com/hashflagsbot)** where every 30 minutes it tweets a new hashflag image.
 
 ## 💻 Website
-The whole catalog is here to be searched. The idea is to transform it in a central place to look for ad campaigns and their contents throught all the social networks.
+The whole catalog is here to search. The idea is to transform in a central place to look for ad campaigns and their contents throught all the social networks.
 **[You can visit the live version here](https://hashflags.netlify.app/)**
 
 ## 🦺 APIs
